@@ -14,9 +14,10 @@ body {
   padding: 16px;
   background-color: rgb(219, 219, 219);
   border: 1px solid grey;
+  max-height: 80vh;
   border-radius: 10px;
-  grid-template-columns: repeat(4, minmax(40px, 50px));
-  grid-template-rows: repeat(7, minmax(40px, 50px));
+  grid-template-columns: repeat(4, minmax(40px, 70px));
+  grid-template-rows: repeat(7, minmax(40px, 70px));
 }
 
 .screen {
@@ -27,14 +28,16 @@ body {
   grid-column: 1 / 5;
   padding: 8px;
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .upper {
-  min-height: 50px;
+  font-size: 1.2rem;
 }
 
 .lower {
-  min-height: 40px;
   font-size: 2rem;
 }
 
@@ -43,6 +46,7 @@ body {
   border: 1px solid grey;
   border-radius: 4px;
   transition: all 0.15s;
+  font-size: 1.5rem;
 }
 
 .btn:hover {
@@ -65,4 +69,15 @@ body {
 
 #delete {
   background-color: rgb(182, 202, 255);
+}
+
+@media (max-width: 600px) {
+  .calculator {
+    gap: 8px;
+    padding: 16px;
+    width: 80vw;
+    height: 70vh;
+    grid-template-columns: repeat(4, minmax(40px, 1fr));
+    grid-template-rows: repeat(7, minmax(40px, 1fr));
+  }
 }
