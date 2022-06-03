@@ -43,79 +43,119 @@ function operate(operation, a, b) {
   return null;
 }
 
-let prevNum = "";
-let prevOp = "";
-let operator = "";
-let num = "0";
+let prevNum = ""; // previous number
+let operator = ""; // current operator
+let num = "0"; // current number
 
-const numbers = document.querySelectorAll(".number");
-const operations = document.querySelectorAll(".operator");
-const del = document.querySelector("#delete");
-const clr = document.querySelector("#clear");
-const dec = document.querySelector(".decimal");
-const lower = document.querySelector(".lower");
-const upper = document.querySelector(".upper");
-const equ = document.querySelector(".equals");
+const numbers = document.querySelectorAll(".number"); // all of the number buttons
+const operations = document.querySelectorAll(".operator"); // all of the operations buttons
+const del = document.querySelector("#delete"); // delete button
+const clr = document.querySelector("#clear"); // clear button
+const dec = document.querySelector(".decimal"); // decimal button
+const lower = document.querySelector(".lower"); // lower display
+const upper = document.querySelector(".upper"); // upper display
+const equ = document.querySelector(".equals"); // equal button
+
+// adds a number to the current number
+function numberAdd(number) {
+  num = +num || num.length > 1 ? num += number : number; // makes 06 turn into 6
+  lower.textContent = num; // updates display
+}
 
 numbers.forEach(btn => {
-  btn.addEventListener("click", e => {
-    num = +num || num.length > 1 ? num += e.target.dataset.number : e.target.dataset.number;
-    lower.textContent = Math.round(+num * 100000) / 100000;
-  })
+  btn.addEventListener("click", e => numberAdd(e.target.dataset.number))
 })
 
-del.addEventListener("click", e => {
+// deletes the last value in the current number string
+function dele() {
   num = num.replace(/.$/, '');
   if (num.length == 0) num = "0";
-  lower.textContent = Math.round(+num * 100000) / 100000;
-})
+  lower.textContent = num; // updates display
+}
 
-clr.addEventListener("click", e => {
+del.addEventListener("click", dele);
+
+// resets all of the variables
+function clearCalc() {
   prevNum = "";
-  prevOp = "";
   operator = "";
   num = "0";
-  upper.textContent = "";
-  lower.textContent = Math.round(+num * 100000) / 100000;
-})
+  upper.textContent = ""; // clears display
+  lower.textContent = num; // updates display
+}
 
-equ.addEventListener("click", e => {
+clr.addEventListener("click", clearCalc);
+
+// formats display to give solution and resets variables
+function equals() {
   let temp = Math.round(+prevNum * 100000) / 100000;
   if (prevNum === "") {
     prevNum = num;
     num = "";
   }
   else if (num !== "" && operator !== "") {
-    num = operate(operator, prevNum, num);
-    lower.textContent = Math.round(+num * 100000) / 100000;
-    upper.textContent = `${temp} ${operator} ${Math.round(+prevNum * 100000) / 100000} =`;
+    upper.textContent = `${temp} ${operator} ${Math.round(+num * 100000) / 100000} =`; // updates display
+    num = Math.round(+operate(operator, prevNum, num) * 100000) / 100000;
+    lower.textContent = num; // updates display
     prevNum = "";
     prevOp = "";
     operator = "";
   }
-})
+}
 
-dec.addEventListener("click", e => {
+equ.addEventListener("click", equals)
+
+// adds decimal point to the current number
+function decimal() {
   if (num.split(".").length == 2) {
     return;
   }
   if (num.length == 0) num = "0";
   num += ".";
-  lower.textContent = Math.round(+num * 100000) / 100000;
-})
+  lower.textContent = num; // updates display
+}
+
+dec.addEventListener("click", decimal)
+
+// updates the operator and computes the output 
+function oper(op) {
+  if (prevNum === "") {
+    prevNum = num;
+    num = "";
+  }
+  else if (num !== "" && operator !== "") {
+    prevNum = operate(operator, prevNum, num);
+    num = "";
+    lower.textContent = Math.round(+prevNum * 100000) / 100000; // updates display
+  }
+  operator = op;
+  upper.textContent = `${Math.round(+prevNum * 100000) / 100000} ${operator}`; // updates display
+}
 
 operations.forEach(btn => {
-  btn.addEventListener("click", e => {
-    if (prevNum === "") {
-      prevNum = num;
-      num = "";
-    }
-    else if (num !== "" && operator !== "") {
-      prevNum = operate(operator, prevNum, num);
-      num = "";
-      lower.textContent = Math.round(+prevNum * 100000) / 100000;
-    }
-    operator = e.target.dataset.op;
-    upper.textContent = `${Math.round(+prevNum * 100000) / 100000} ${operator}`;
-  })
+  btn.addEventListener("click", e => oper(e.target.dataset.op));
 })
+
+// manages keyboard inputs
+function action(e) {
+  let key = e.key;
+  if (key == "Backspace") dele();
+  else if (key == "Clear") clearCalc();
+  else if (key === ".") decimal();
+  else if (+key == key) numberAdd(key);
+  else if (key === "=" || key == "Enter") equals();
+  switch (key) {
+    case "/":
+      return oper("÷");
+    case "*":
+      return oper("×");
+    case "+":
+      return oper("+");
+    case "-":
+      return oper("-");
+    case "^":
+      return oper("^");
+  }
+}
+
+window.addEventListener('keydown', action);
