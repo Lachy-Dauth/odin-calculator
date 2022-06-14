@@ -119,6 +119,7 @@ dec.addEventListener("click", decimal)
 
 // updates the operator and computes the output 
 function oper(op) {
+  lower.textContent = op;
   if (prevNum === "") {
     prevNum = num;
     num = "";
